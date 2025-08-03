@@ -1,49 +1,66 @@
-// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
-import 'search_screen.dart';
-import 'routes_screen.dart'; // Yeni import
-import 'stops_screen.dart';  // Yeni import
+// EKLENDİ: Hareketli menü widget'ının bulunduğu dosyayı import ediyoruz.
+import 'package:card_app/widgets/animated_bottom_nav_bar.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
+  // EKLENDİ: İyi pratikler için constructor'a key ekliyoruz.
   const HomeScreen({super.key});
+
+  @override
+  // DÜZELTİLDİ: State class'ını public yapmak için alt tire (_) kaldırıldı.
+  State<HomeScreen> createState() => HomeScreenState();
+}
+
+// DÜZELTİLDİ: State class'ı public yapıldı.
+class HomeScreenState extends State<HomeScreen> {
+  final PageController _pageController = PageController();
+  int _selectedIndex = 0;
+
+  final List<Widget> _screens = [
+    const Center(child: Text('Ana Sayfa İçeriği', style: TextStyle(color: Colors.white, fontSize: 24))),
+    const Center(child: Text('Harita İçeriği', style: TextStyle(color: Colors.white, fontSize: 24))),
+    const Center(child: Text('Geçmiş İçeriği', style: TextStyle(color: Colors.white, fontSize: 24))),
+    const Center(child: Text('Profil İçeriği', style: TextStyle(color: Colors.white, fontSize: 24))),
+  ];
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  void _onItemTapped(int selectedIndex) {
+    _pageController.jumpToPage(selectedIndex);
+  }
+
+
   @override
   Widget build(BuildContext context) {
-    final items = [
-      {'icon': Icons.search, 'label': 'Otobüs / Durak Ara', 'page': const SearchScreen()},
-      {'icon': Icons.directions_bus, 'label': 'Tüm Hatlar', 'page': const RoutesScreen()}, // Yeni eklendi
-      {'icon': Icons.place, 'label': 'Tüm Duraklar', 'page': const StopsScreen()}, // Yeni eklendi
-    ];
-
     return Scaffold(
-      appBar: AppBar(title: const Text('Ana Sayfa'), centerTitle: true),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            childAspectRatio: 1.2,
+      appBar: AppBar(
+        title: const Text('VazoKartlarım', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add_card, color: Colors.white),
+            onPressed: () {
+              // TODO: Kart ekleme ekranına git
+            },
           ),
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            final item = items[index];
-            return InkWell(
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => item['page'] as Widget)),
-              borderRadius: BorderRadius.circular(12),
-              child: Card(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(item['icon'] as IconData, size: 40),
-                    const SizedBox(height: 8),
-                    Text(item['label'] as String, textAlign: TextAlign.center, style: Theme.of(context).textTheme.titleLarge),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+        ],
+      ),
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
+        physics: const NeverScrollableScrollPhysics(),
+        // DÜZELTİLDİ: 'children' parametresi sona alındı.
+        children: _screens, 
+      ),
+      // Artık AnimatedBottomNavBar tanınıyor.
+      bottomNavigationBar: AnimatedBottomNavBar(
+        selectedIndex: _selectedIndex,
+        onItemTapped: _onItemTapped,
       ),
     );
   }

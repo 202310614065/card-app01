@@ -1,25 +1,28 @@
-// lib/main.dart
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
-import 'theme.dart';
-import 'screens/root_page.dart';
+// EKLENDİ: LoginScreen'in bulunduğu dosyayı import ediyoruz.
+import 'package:card_app/screens/login_screen.dart'; 
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+void main() {
+  runApp(const VazoKartApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class VazoKartApp extends StatelessWidget {
+  // EKLENDİ: İyi pratikler için constructor'a key ekliyoruz.
+  const VazoKartApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Kart Uygulaması',
+      title: 'VazoKart Mobil',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const RootPage(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        scaffoldBackgroundColor: const Color(0xFF1A1A1A),
+        primaryColor: const Color(0xFF00BFFF),
+        fontFamily: 'Poppins',
+      ),
+      // Artık LoginScreen tanınıyor.
+      home: LoginScreen(), 
     );
   }
 }

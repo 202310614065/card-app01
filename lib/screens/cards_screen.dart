@@ -18,7 +18,7 @@ class CardsScreen extends StatelessWidget {
             child: const Text('Giriş Yap'),
             onPressed: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const LoginScreen()),
+              MaterialPageRoute(builder: (_) =>  LoginScreen()),
             ),
           ),
         ),
