@@ -31,10 +31,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: const Color(0xFF121212), // Koyu tema arkaplanı
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 20),
@@ -43,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildGreeting(user),
             const SizedBox(height: 20),
             // CARD CAROUSEL
-            _buildCardCarousel(user, theme),
+            _buildCardCarousel(user),
             const SizedBox(height: 30),
             // ACTION GRID
             _buildActionGrid(),
@@ -66,7 +65,7 @@ class _HomeScreenState extends State<HomeScreen> {
             style: const TextStyle(
               fontSize: 26,
               fontWeight: FontWeight.bold,
-              color: Colors.black87,
+              color: Colors.white, // Koyu tema için beyaz metin
             ),
           ),
           const SizedBox(height: 4),
@@ -74,7 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'VazoKart işlemlerine hoş geldin.',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[600],
+              color: Colors.grey[400], // Koyu tema için açık gri metin
             ),
           ),
         ],
@@ -83,7 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // Kaydırılabilir kartlar bölümü
-  Widget _buildCardCarousel(User? user, ThemeData theme) {
+  Widget _buildCardCarousel(User? user) {
     return SizedBox(
       height: 210,
       child: user == null
@@ -95,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const Center(child: CircularProgressIndicator());
                 }
                 if (snapshot.hasError) {
-                  return const Center(child: Text('Bir hata oluştu.'));
+                  return const Center(child: Text('Bir hata oluştu.', style: TextStyle(color: Colors.white70)));
                 }
                 final cards = snapshot.data ?? [];
                 if (cards.isEmpty) {
@@ -159,7 +158,10 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             } else {
                ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${action['label']} özelliği yakında eklenecek.')),
+                SnackBar(
+                  backgroundColor: Colors.grey[800],
+                  content: Text('${action['label']} özelliği yakında eklenecek.', style: const TextStyle(color: Colors.white)),
+                ),
               );
             }
           },
@@ -201,19 +203,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildPromptContainer(String text, IconData icon) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Colors.grey[850], // Koyu tema için kutu rengi
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.grey.shade300),
+        border: Border.all(color: Colors.grey[700]!),
       ),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 40, color: Theme.of(context).primaryColor),
+            Icon(icon, size: 40, color: Colors.white70),
             const SizedBox(height: 12),
             Text(
               text,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[700]),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600, color: Colors.grey[300]),
             ),
           ],
         ),
@@ -222,7 +224,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Kartın görselini oluşturan widget - cardNumber hatası giderildi.
+// Kartın görselini oluşturan widget - Koyu Tema
 class _CardView extends StatelessWidget {
   final CardModel card;
   const _CardView({required this.card});
@@ -235,16 +237,16 @@ class _CardView extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Colors.deepPurpleAccent, Colors.blueAccent],
+            colors: [Color(0xFF8E2DE2), Color(0xFF4A00E0)], // Koyu tema için yeni gradient
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.deepPurple.withAlpha(77),
-              blurRadius: 15,
-              offset: const Offset(0, 5),
+              color: const Color(0xFF8E2DE2).withAlpha(50),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
             )
           ],
         ),
@@ -262,7 +264,6 @@ class _CardView extends StatelessWidget {
                 Icon(Icons.memory, color: Colors.white.withAlpha(204), size: 36),
               ],
             ),
-            // Kart Numarası yerine Kart Etiketi (label) gösteriliyor
             Text(
               card.label,
               style: const TextStyle(
@@ -272,7 +273,6 @@ class _CardView extends StatelessWidget {
                 letterSpacing: 1,
               ),
             ),
-            // Bakiye bilgisi
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -292,7 +292,7 @@ class _CardView extends StatelessWidget {
   }
 }
 
-// Ana menüdeki aksiyon butonu
+// Ana menüdeki aksiyon butonu - Koyu Tema
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -306,16 +306,16 @@ class _ActionButton extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Colors.grey[850], // Koyu tema için kutu rengi
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.grey.withAlpha(25), spreadRadius: 1, blurRadius: 10)],
+          boxShadow: [BoxShadow(color: Colors.black.withAlpha(50), spreadRadius: 1, blurRadius: 10)],
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 32, color: Theme.of(context).primaryColor),
+            Icon(icon, size: 32, color: Colors.white70),
             const SizedBox(height: 10),
-            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87)),
+            Text(label, textAlign: TextAlign.center, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: Colors.white)),
           ],
         ),
       ),
