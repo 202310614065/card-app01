@@ -13,9 +13,10 @@ class AnimatedBottomNavBar extends StatelessWidget {
 
   final List<IconData> _icons = const [
     Icons.home_filled,
-    Icons.map_outlined,
-    Icons.history,
-    Icons.person_outline,
+    Icons.credit_card,
+    Icons.qr_code_scanner,
+    Icons.swap_horiz,
+    Icons.explore,
   ];
 
   @override

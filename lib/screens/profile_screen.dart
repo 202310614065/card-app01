@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'auth_wrapper.dart'; // Çıkış yapınca yönlendirmek için
+import 'root_page.dart'; // Çıkış yapınca ana sayfaya dön
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -81,7 +81,7 @@ class ProfileScreen extends StatelessWidget {
               await FirebaseAuth.instance.signOut();
               if (context.mounted) {
                 Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (context) => const AuthWrapper()),
+                  MaterialPageRoute(builder: (context) => const RootPage()),
                   (Route<dynamic> route) => false,
                 );
               }

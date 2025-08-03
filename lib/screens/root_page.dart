@@ -5,6 +5,7 @@ import 'cards_screen.dart';
 import 'qr_screen.dart';
 import 'transactions_screen.dart';
 import 'discover_screen.dart';
+import '../widgets/animated_bottom_nav_bar.dart';
 
 class RootPage extends StatefulWidget {
   const RootPage({super.key});
@@ -26,16 +27,9 @@ class _RootPageState extends State<RootPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (i) => setState(() => _currentIndex = i),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Ana'),
-          BottomNavigationBarItem(icon: Icon(Icons.credit_card), label: 'Kartlarım'),
-          BottomNavigationBarItem(icon: Icon(Icons.qr_code_scanner), label: ''),
-          BottomNavigationBarItem(icon: Icon(Icons.swap_horiz), label: 'İşlemler'),
-          BottomNavigationBarItem(icon: Icon(Icons.explore), label: 'Keşfet'),
-        ],
+      bottomNavigationBar: AnimatedBottomNavBar(
+        selectedIndex: _currentIndex,
+        onItemTapped: (i) => setState(() => _currentIndex = i),
       ),
     );
   }
