@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "442709428745",
+    "project_id": "buscar-app01",
+    "storage_bucket": "buscar-app01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:442709428745:android:9ca30901f231f813b386d8",
+        "android_client_info": {
+          "package_name": "com.example.card_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCr-apOr6oX70wcq7Nmvdu73n68r0aPn2U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
