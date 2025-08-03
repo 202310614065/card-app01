@@ -1,30 +1,23 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
+// test/widget_test.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:card_app/main.dart';
+import 'package:card_app/screens/login_screen.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  // NOT: Bu testin çalışması için firebase_core'un sahte (mock) bir versiyonunun
+  // ayarlanması gerekir. Bu, basit bir UI doğrulama testidir.
+  testWidgets('App starts and shows LoginScreen when not authenticated', (WidgetTester tester) async {
+    // Uygulamayı başlat ve bir frame oluştur.
+    // Gerçek Firebase'i başlatmadan test etmek için main() içindeki
+    // Firebase.initializeApp() çağrısını yorum satırına almanız gerekebilir.
+    await tester.pumpWidget(const VazoKartApp());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Yükleme göstergesinin (CircularProgressIndicator) kaybolmasını bekle.
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // AuthWrapper'ın, kullanıcı giriş yapmadığı için LoginScreen'i göstermesini bekle.
+    expect(find.byType(LoginScreen), findsOneWidget);
+    expect(find.text('Giriş Yap'), findsWidgets);
   });
 }

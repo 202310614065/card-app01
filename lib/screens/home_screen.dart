@@ -1,3 +1,4 @@
+// lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'login_screen.dart';
@@ -26,7 +27,7 @@ class HomeScreen extends StatelessWidget {
               child: const Text("Giriş Yap"),
               onPressed: () {
                 Navigator.of(context).pop(); // Dialog'u kapat
-                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
               },
             ),
           ],
@@ -58,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
                 } else {
                   // Giriş yapılmamışsa giriş ekranına git
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
                 }
               },
               style: TextButton.styleFrom(
