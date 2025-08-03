@@ -23,4 +23,14 @@ class CardModel {
       balance: (data['balance'] ?? 0.0).toDouble(),
     );
   }
+
+  // Veritabanına eklemek için
+  Map<String, dynamic> toMap() {
+    return {
+      'ownerId': ownerId,
+      'number': number,
+      'label': label,
+      'balance': balance,
+    };
+  }
 }

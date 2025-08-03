@@ -1,15 +1,13 @@
-// lib/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'register_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({Key? key}) : super(key: key);
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _emailCtrl = TextEditingController();
   final _pwdCtrl = TextEditingController();
   bool _loading = false;
@@ -18,7 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Giriş Yap')),
+      appBar: AppBar(title: const Text('Kayıt Ol')),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -40,19 +38,10 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              onPressed: _loading ? null : _doLogin,
+              onPressed: _loading ? null : _doRegister,
               child: _loading
                   ? const CircularProgressIndicator(color: Colors.white)
-                  : const Text('Giriş Yap'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const RegisterScreen()),
-                );
-              },
-              child: const Text('Hesap oluştur'),
+                  : const Text('Kayıt Ol'),
             ),
           ],
         ),
@@ -60,10 +49,10 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Future<void> _doLogin() async {
+  Future<void> _doRegister() async {
     setState(() { _loading = true; _error = null; });
     try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: _emailCtrl.text.trim(),
         password: _pwdCtrl.text.trim(),
       );

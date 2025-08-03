@@ -18,9 +18,9 @@ class FirestoreService {
             .toList());
   }
 
-  // Kart detayı getir
-  Future<DocumentSnapshot> getCardDetail(String cardId) {
-    return _db.collection('cards').doc(cardId).get();
+  // Kart ekleme
+  Future<void> addCard(CardModel card) {
+    return _db.collection('cards').add(card.toMap());
   }
 
   // Durakları getir
