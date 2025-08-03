@@ -49,7 +49,7 @@ class AppTheme {
       ),
 
       // Kart Teması
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         color: surfaceColor,
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -83,7 +83,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
-        hintStyle: TextStyle(color: textSecondaryColor.withOpacity(0.5)),
+        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)), // <-- Fixed here
         prefixIconColor: textSecondaryColor,
       ),
 

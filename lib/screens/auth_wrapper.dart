@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'home_screen.dart'; // Birazdan oluşturacağımız ana ekran
-import 'login_screen.dart'; // Mevcut giriş ekranınız (daha sonra güncelleyeceğiz)
+import 'home_screen.dart'; // Ana ekran
+import 'login_screen.dart'; // Giriş ekranı
 
 // Bu widget, Firebase'deki kullanıcı oturum durumunu dinler ve
 // duruma göre Ana Ekran veya Giriş Ekranı'nı gösterir.

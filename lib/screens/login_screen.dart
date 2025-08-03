@@ -171,3 +171,22 @@ class _FeatureCard extends StatelessWidget {
     );
   }
 }
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Giriş Yap')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            // TODO: Giriş işlemini burada yapın
+          },
+          child: const Text('Giriş Yap'),
+        ),
+      ),
+    );
+  }
+}
