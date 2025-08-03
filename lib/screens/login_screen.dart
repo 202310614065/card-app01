@@ -1,105 +1,171 @@
 import 'package:flutter/material.dart';
-// Ana sayfayı ve kayıt ekranını import edeceğiz.
-// import 'package:vazokart_mobil/screens/home_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login_screen.dart';
+import 'profile_screen.dart'; // Profil ekranı için yeni dosya
 
-class LoginScreen extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  // Kullanıcı giriş yapmamışsa uyarı gösterip giriş ekranına yönlendiren metot
+  void _showLoginRequiredDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          title: Text("Giriş Gerekli", style: Theme.of(context).textTheme.headlineMedium),
+          content: Text("Bu özelliği kullanabilmek için giriş yapmanız gerekmektedir.", style: Theme.of(context).textTheme.bodyMedium),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("İptal"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text("Giriş Yap"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Dialog'u kapat
+                Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+
     return Scaffold(
-      body: SafeArea(
+      appBar: AppBar(
+        title: Text('VazoKart Mobil', style: Theme.of(context).textTheme.headlineMedium),
+        actions: [
+          // Kullanıcının giriş durumuna göre buton göster
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: TextButton.icon(
+              icon: Icon(
+                user != null ? Icons.person_outline : Icons.login,
+                size: 20,
+              ),
+              label: Text(user != null ? 'Hesabım' : 'Giriş Yap'),
+              onPressed: () {
+                if (user != null) {
+                  // Giriş yapılmışsa profil ekranına git
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                } else {
+                  // Giriş yapılmamışsa giriş ekranına git
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                }
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: Theme.of(context).colorScheme.onBackground,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          padding: const EdgeInsets.all(16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              // Uygulama Logosu veya Adı
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               Text(
-                'VazoKart Mobil',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
+                'Hoş Geldiniz,',
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
               ),
-              SizedBox(height: 48.0),
-
-              // E-posta Giriş Alanı
-              TextField(
-                keyboardType: TextInputType.emailAddress,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'E-posta Adresi',
-                  hintStyle: TextStyle(color: Colors.grey[600]),
-                  prefixIcon: Icon(Icons.email_outlined, color: Colors.grey[600]),
-                  filled: true,
-                  fillColor: Color(0xFF2C2C2C),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
+              Text(
+                user?.displayName ?? 'Gezgin',
+                style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 28),
               ),
-              SizedBox(height: 16.0),
-
-              // Şifre Giriş Alanı
-              TextField(
-                obscureText: true,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  hintText: 'Şifre',
-                  hintStyle: TextStyle(color: Colors.grey[600]),
-                  prefixIcon: Icon(Icons.lock_outlined, color: Colors.grey[600]),
-                  filled: true,
-                  fillColor: Color(0xFF2C2C2C),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    borderSide: BorderSide.none,
-                  ),
-                ),
-              ),
-              SizedBox(height: 24.0),
-
-              // Giriş Yap Butonu
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).primaryColor, // Temadan gelen ana renk
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                onPressed: () {
-                  // TODO: Giriş kontrolü yapılacak
-                  // Başarılı olursa ana ekrana yönlendir:
-                  // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context) => HomeScreen()));
-                },
-                child: Text('Giriş Yap', style: TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
-              ),
-              SizedBox(height: 16.0),
-
-              // Diğer Seçenekler
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text("Hesabın yok mu? ", style: TextStyle(color: Colors.grey[400])),
-                  GestureDetector(
-                    onTap: () {
-                      // TODO: Kayıt ol ekranına yönlendir
-                    },
-                    child: Text(
-                      "Kayıt Ol",
-                      style: TextStyle(
-                        color: Theme.of(context).primaryColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              const SizedBox(height: 24),
+              // Ana menü butonları
+              _buildFeatureGrid(context, user),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  // Ana ekrandaki işlev kartlarını oluşturan widget
+  Widget _buildFeatureGrid(BuildContext context, User? user) {
+    final features = [
+      {'icon': Icons.credit_card, 'label': 'Kartlarım', 'auth_required': true},
+      {'icon': Icons.pin_drop_outlined, 'label': 'Duraklar', 'auth_required': false},
+      {'icon': Icons.directions_bus_filled_outlined, 'label': 'Otobüsler', 'auth_required': false},
+      {'icon': Icons.map_outlined, 'label': 'En Yakın Durak', 'auth_required': false},
+      {'icon': Icons.add_card_outlined, 'label': 'Bakiye Yükle', 'auth_required': true},
+      {'icon': Icons.support_agent_outlined, 'label': 'Şikayet İlet', 'auth_required': true},
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+        childAspectRatio: 1.2,
+      ),
+      itemCount: features.length,
+      itemBuilder: (context, index) {
+        final feature = features[index];
+        return _FeatureCard(
+          icon: feature['icon'] as IconData,
+          label: feature['label'] as String,
+          onTap: () {
+            // Eğer özellik giriş gerektiriyorsa ve kullanıcı giriş yapmamışsa
+            if (feature['auth_required'] as bool && user == null) {
+              _showLoginRequiredDialog(context);
+            } else {
+              // TODO: İlgili sayfaya yönlendirme yapılacak.
+              // Örnek: if (feature['label'] == 'Kartlarım') Navigator.push(...);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('${feature['label']} sayfasına gidiliyor...')),
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+}
+
+// Tek bir işlev kartını temsil eden widget
+class _FeatureCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _FeatureCard({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Card(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 40, color: Theme.of(context).colorScheme.secondary),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w600),
+            ),
+          ],
         ),
       ),
     );
