@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestore_service.dart';
 import '../models/card_model.dart';
+import '../utils/auth_utils.dart';
 
 class AddCardScreen extends StatefulWidget {
   const AddCardScreen({Key? key}) : super(key: key);
@@ -56,18 +57,28 @@ class _AddCardScreenState extends State<AddCardScreen> {
     if (!_formKey.currentState!.validate()) return;
     setState(() { loading = true; });
     try {
-      final user = FirebaseAuth.instance.currentUser!;
+      final auth = FirebaseAuth.instance;
+      var user = auth.currentUser;
+      if (user == null) {
+        final loggedIn = await ensureLoggedIn(context);
+        if (!loggedIn) {
+          return;
+        }
+        user = auth.currentUser;
+      }
+
       final newCard = CardModel(
         id: '',
-        ownerId: user.uid,
+        ownerId: user!.uid,
         number: number,
         label: label,
         balance: 0.0,
       );
       await FirestoreService().addCard(newCard);
-      Navigator.pop(context, true);
+      if (mounted) Navigator.pop(context, true);
     } catch (_) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Kart ekleme hatası')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Kart ekleme hatası')));
     } finally {
       if (mounted) setState(() { loading = false; });
     }

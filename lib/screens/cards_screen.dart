@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../services/firestore_service.dart';
 import '../models/card_model.dart';
-import 'login_screen.dart';
 import 'add_card_screen.dart';
 import 'card_detail_screen.dart';
+import '../utils/auth_utils.dart';
 
 class CardsScreen extends StatelessWidget {
   const CardsScreen({super.key});
@@ -25,10 +25,7 @@ class CardsScreen extends StatelessWidget {
               child: ElevatedButton(
                 child: const Text('Giriş Yap'),
                 onPressed: () async {
-                  await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  );
+                  await ensureLoggedIn(context);
                 },
               ),
             ),
@@ -71,6 +68,8 @@ class CardsScreen extends StatelessWidget {
           floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () async {
+              final ok = await ensureLoggedIn(context);
+              if (!ok) return;
               await Navigator.push<bool>(
                 context,
                 MaterialPageRoute(builder: (_) => const AddCardScreen()),

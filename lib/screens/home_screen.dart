@@ -1,40 +1,18 @@
 // lib/screens/home_screen.dart
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'login_screen.dart';
 import 'profile_screen.dart'; // Profil ekranı için yeni dosya
+import '../utils/auth_utils.dart';
+import '../services/firestore_service.dart';
+import '../models/card_model.dart';
+import 'cards_screen.dart';
+import 'stops_screen.dart';
+import 'routes_screen.dart';
+import 'search_screen.dart';
+import 'add_card_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  // Kullanıcı giriş yapmamışsa uyarı gösterip giriş ekranına yönlendiren metot
-  void _showLoginRequiredDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: Text("Giriş Gerekli", style: Theme.of(context).textTheme.headlineMedium),
-          content: Text("Bu özelliği kullanabilmek için giriş yapmanız gerekmektedir.", style: Theme.of(context).textTheme.bodyMedium),
-          actions: <Widget>[
-            TextButton(
-              child: const Text("İptal"),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-            ElevatedButton(
-              child: const Text("Giriş Yap"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Dialog'u kapat
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,13 +31,14 @@ class HomeScreen extends StatelessWidget {
                 size: 20,
               ),
               label: Text(user != null ? 'Hesabım' : 'Giriş Yap'),
-              onPressed: () {
+              onPressed: () async {
                 if (user != null) {
-                  // Giriş yapılmışsa profil ekranına git
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ProfileScreen()),
+                  );
                 } else {
-                  // Giriş yapılmamışsa giriş ekranına git
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
+                  await ensureLoggedIn(context);
                 }
               },
               style: TextButton.styleFrom(
@@ -76,21 +55,74 @@ class HomeScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Hoş Geldiniz,',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontSize: 18),
-              ),
-              Text(
-                user?.displayName ?? 'Gezgin',
-                style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: 28),
-              ),
+              _buildCardSection(context, user),
               const SizedBox(height: 24),
-              // Ana menü butonları
               _buildFeatureGrid(context, user),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Kartlarımı listeleyen bölüm
+  Widget _buildCardSection(BuildContext context, User? user) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Kartlarım', style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 12),
+        if (user == null)
+          const Text('Kartlarınızı görmek için giriş yapın.')
+        else
+          SizedBox(
+            height: 120,
+            child: StreamBuilder<List<CardModel>>(
+              stream: FirestoreService().getCards(user.uid),
+              builder: (context, snap) {
+                if (snap.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                final cards = snap.data ?? [];
+                if (cards.isEmpty) {
+                  return const Center(child: Text('Henüz kart eklenmemiş.'));
+                }
+                return ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: cards.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (_, i) {
+                    final card = cards[i];
+                    return Container(
+                      width: 200,
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(card.label,
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodyLarge
+                                  ?.copyWith(color: Colors.white)),
+                          Text('${card.balance.toStringAsFixed(2)} ₺',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(color: Colors.white)),
+                        ],
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+      ],
     );
   }
 
@@ -120,16 +152,46 @@ class HomeScreen extends StatelessWidget {
         return _FeatureCard(
           icon: feature['icon'] as IconData,
           label: feature['label'] as String,
-          onTap: () {
-            // Eğer özellik giriş gerektiriyorsa ve kullanıcı giriş yapmamışsa
+          onTap: () async {
             if (feature['auth_required'] as bool && user == null) {
-              _showLoginRequiredDialog(context);
-            } else {
-              // TODO: İlgili sayfaya yönlendirme yapılacak.
-              // Örnek: if (feature['label'] == 'Kartlarım') Navigator.push(...);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('${feature['label']} sayfasına gidiliyor...')),
-              );
+              final ok = await ensureLoggedIn(context);
+              if (!ok) return;
+            }
+            switch (feature['label']) {
+              case 'Kartlarım':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CardsScreen()),
+                );
+                break;
+              case 'Duraklar':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const StopsScreen()),
+                );
+                break;
+              case 'Otobüsler':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const RoutesScreen()),
+                );
+                break;
+              case 'En Yakın Durak':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SearchScreen()),
+                );
+                break;
+              case 'Bakiye Yükle':
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AddCardScreen()),
+                );
+                break;
+              default:
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${feature['label']} henüz hazır değil')), 
+                );
             }
           },
         );
